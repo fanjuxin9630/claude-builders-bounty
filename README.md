@@ -1,82 +1,77 @@
-# 📋 Auto CHANGELOG Generator
+# 🔍 Claude Code PR Review Agent
 
-Generate a structured `CHANGELOG.md` from your git history in one command.
+A CLI tool that fetches a GitHub PR diff and returns a structured Markdown review.
 
-## Setup (3 steps)
+## Setup
 
-1. **Download the script**
-   ```bash
-   curl -O https://raw.githubusercontent.com/fanjuxin9630/openclaw-workspace/master/changelog/generate_changelog.sh
-   chmod +x generate_changelog.sh
-   ```
+```bash
+# Clone or download claude-review.py
+chmod +x claude-review.py
 
-2. **Run it in your project**
-   ```bash
-   ./generate_changelog.sh
-   ```
-
-3. **Commit the result**
-   ```bash
-   git add CHANGELOG.md && git commit -m "docs: add CHANGELOG"
-   ```
+# Optional: set your GitHub token for private repos
+export GITHUB_TOKEN="ghp_xxx"
+```
 
 ## Usage
 
 ```bash
-./generate_changelog.sh [output_file] [repo_path]
+# Review a public PR
+python3 claude-review.py --pr https://github.com/owner/repo/pull/123
+
+# Review with auth (for private repos)
+python3 claude-review.py --pr https://github.com/owner/repo/pull/123 --token ghp_xxx
+
+# Save output to file
+python3 claude-review.py --pr https://github.com/owner/repo/pull/123 -o review.md
+
+# Review a local diff
+python3 claude-review.py --pr-diff /path/to/diff.txt
 ```
 
-### Examples
+## Output Structure
 
-```bash
-# Basic usage (generates CHANGELOG.md in current directory)
-./generate_changelog.sh
+```
+## 🔍 PR Review: owner/repo#123
+**Confidence:** 🟢 High | 🟡 Medium | 🔴 Low
 
-# Custom output file
-./generate_changelog.sh docs/HISTORY.md
+## 📝 Summary
+2-3 sentence overview of changes
 
-# Specify a different repo
-./generate_changelog.sh CHANGELOG.md ../my-other-project
+## ⚠️ Identified Risks
+1. Unresolved TODOs/FIXMEs
+2. Debug code left in production
+3. Large file changes
+
+## 💡 Improvement Suggestions
+1. Resolve markers before merging
+2. Add tests for small changes
+3. Split large PRs
+
+## 📌 TODO/FIXME Locations
+- `src/app.ts`: "// TODO: add error handling"
 ```
 
-## Python version
+## Sample Output
 
-```bash
-python3 generate_changelog.py [output_file] [repo_path]
+See `sample-review-1.md` and `sample-review-2.md`.
+
+## How It Works
+
+1. Fetches the PR diff via GitHub API
+2. Parses changes file-by-file
+3. Detects: TODOs, debug code, large files, missing deletions
+4. Generates structured Markdown with risks and suggestions
+5. Assigns a confidence score based on findings
+
+## Using as a Claude Code Skill
+
+Add to your `CLAUDE.md`:
+
 ```
-
-## Features
-
-- ✅ Fetches commits since the last git tag (or all commits if no tags)
-- ✅ Auto-categorizes into: Added / Fixed / Changed / Removed
-- ✅ Recognizes conventional commits (`feat:`, `fix:`, `chore:`, etc.)
-- ✅ Recognizes semantic prefixes (`Add`, `Fix`, `Update`, `Remove`, etc.)
-- ✅ Outputs a properly formatted CHANGELOG.md
-- ✅ Includes commit hashes with GitHub links
-- ✅ Works anywhere (Bash or Python)
-
-## Output example
-
-```markdown
-# Changelog
-
-## [Unreleased]
-
-### ✨ Added
-- Implement user authentication. ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d))
-
-### 🐛 Fixed
-- Resolve login page crash on mobile. ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h))
-
-### 🔄 Changed
-- Update dependencies to latest versions. ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l))
+## PR Review
+Run `python3 claude-review.py --pr <url>` to get a structured review.
 ```
-
-## Compatibility
-
-- **Bash** — Works on Linux, macOS, WSL, CI/CD pipelines
-- **Python 3** — Works anywhere Python 3 is installed
 
 ---
 
-_Claude Builders Bounty #1 · $50_
+_Claude Builders Bounty #4 · $150_
