@@ -1,82 +1,45 @@
-# 📋 Auto CHANGELOG Generator
+# 🛡️ Claude Code Destructive Command Guard
 
-Generate a structured `CHANGELOG.md` from your git history in one command.
+A `pre-tool-use` hook that blocks dangerous bash commands in [Claude Code](https://docs.anthropic.com/claude-code/hooks).
 
-## Setup (3 steps)
-
-1. **Download the script**
-   ```bash
-   curl -O https://raw.githubusercontent.com/fanjuxin9630/openclaw-workspace/master/changelog/generate_changelog.sh
-   chmod +x generate_changelog.sh
-   ```
-
-2. **Run it in your project**
-   ```bash
-   ./generate_changelog.sh
-   ```
-
-3. **Commit the result**
-   ```bash
-   git add CHANGELOG.md && git commit -m "docs: add CHANGELOG"
-   ```
-
-## Usage
+## Installation (2 commands)
 
 ```bash
-./generate_changelog.sh [output_file] [repo_path]
+mkdir -p ~/.claude/hooks
+cp pre-tool-use ~/.claude/hooks/ && chmod +x ~/.claude/hooks/pre-tool-use
 ```
 
-### Examples
+That's it. Claude Code picks it up automatically on the next tool call.
 
-```bash
-# Basic usage (generates CHANGELOG.md in current directory)
-./generate_changelog.sh
+## What It Blocks
 
-# Custom output file
-./generate_changelog.sh docs/HISTORY.md
+| Pattern | Example | Why |
+|---|---|---|
+| `rm -rf /` | `rm -rf /var` | Destructive recursive delete |
+| `DROP TABLE` | `DROP TABLE users` | Destructive DDL |
+| `TRUNCATE` | `TRUNCATE orders` | Destructive DDL |
+| `git push --force` | `git push origin main -f` | Rewrites history |
+| `DELETE FROM` (no WHERE) | `DELETE FROM users` | Mass data loss |
+| `UPDATE` (no WHERE) | `UPDATE users SET role = 'admin'` | Mass corruption |
+| `mkfs.*` | `mkfs.ext4 /dev/sda` | Filesystem destruction |
+| `dd` to block device | `dd if=/dev/zero of=/dev/sda` | Raw disk wipe |
 
-# Specify a different repo
-./generate_changelog.sh CHANGELOG.md ../my-other-project
+## Logs
+
+Every blocked command is logged to `~/.claude/hooks/blocked.log`:
+
+```
+[2026-06-18T14:30:00Z] BLOCKED | pattern=rm-rf-recursive | command=rm -rf /var/log | project=/home/user/my-project
 ```
 
-## Python version
+## Does it interfere?
 
-```bash
-python3 generate_changelog.py [output_file] [repo_path]
-```
+No. Only the patterns above are blocked. Normal commands like `ls`, `cat`, `git commit`, `npm install`, `curl`, etc. pass through without any overhead.
 
-## Features
+## Customizing
 
-- ✅ Fetches commits since the last git tag (or all commits if no tags)
-- ✅ Auto-categorizes into: Added / Fixed / Changed / Removed
-- ✅ Recognizes conventional commits (`feat:`, `fix:`, `chore:`, etc.)
-- ✅ Recognizes semantic prefixes (`Add`, `Fix`, `Update`, `Remove`, etc.)
-- ✅ Outputs a properly formatted CHANGELOG.md
-- ✅ Includes commit hashes with GitHub links
-- ✅ Works anywhere (Bash or Python)
-
-## Output example
-
-```markdown
-# Changelog
-
-## [Unreleased]
-
-### ✨ Added
-- Implement user authentication. ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d))
-
-### 🐛 Fixed
-- Resolve login page crash on mobile. ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h))
-
-### 🔄 Changed
-- Update dependencies to latest versions. ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l))
-```
-
-## Compatibility
-
-- **Bash** — Works on Linux, macOS, WSL, CI/CD pipelines
-- **Python 3** — Works anywhere Python 3 is installed
+Edit the `PATTERNS` array in `pre-tool-use` to add or remove patterns.
 
 ---
 
-_Claude Builders Bounty #1 · $50_
+_Claude Builders Bounty #3 · $100_
