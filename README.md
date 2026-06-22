@@ -1,45 +1,53 @@
-# 🛡️ Claude Code Destructive Command Guard
+# Claude Builders Bounty 🤖
 
-A `pre-tool-use` hook that blocks dangerous bash commands in [Claude Code](https://docs.anthropic.com/claude-code/hooks).
+> A community bounty board for Claude Code builders.
 
-## Installation (2 commands)
-
-```bash
-mkdir -p ~/.claude/hooks
-cp pre-tool-use ~/.claude/hooks/ && chmod +x ~/.claude/hooks/pre-tool-use
-```
-
-That's it. Claude Code picks it up automatically on the next tool call.
-
-## What It Blocks
-
-| Pattern | Example | Why |
-|---|---|---|
-| `rm -rf /` | `rm -rf /var` | Destructive recursive delete |
-| `DROP TABLE` | `DROP TABLE users` | Destructive DDL |
-| `TRUNCATE` | `TRUNCATE orders` | Destructive DDL |
-| `git push --force` | `git push origin main -f` | Rewrites history |
-| `DELETE FROM` (no WHERE) | `DELETE FROM users` | Mass data loss |
-| `UPDATE` (no WHERE) | `UPDATE users SET role = 'admin'` | Mass corruption |
-| `mkfs.*` | `mkfs.ext4 /dev/sda` | Filesystem destruction |
-| `dd` to block device | `dd if=/dev/zero of=/dev/sda` | Raw disk wipe |
-
-## Logs
-
-Every blocked command is logged to `~/.claude/hooks/blocked.log`:
-
-```
-[2026-06-18T14:30:00Z] BLOCKED | pattern=rm-rf-recursive | command=rm -rf /var/log | project=/home/user/my-project
-```
-
-## Does it interfere?
-
-No. Only the patterns above are blocked. Normal commands like `ls`, `cat`, `git commit`, `npm install`, `curl`, etc. pass through without any overhead.
-
-## Customizing
-
-Edit the `PATTERNS` array in `pre-tool-use` to add or remove patterns.
+Building with Claude Code? Have tasks to delegate?
+Want to get paid for contributing to AI projects?
+You're in the right place.
 
 ---
 
-_Claude Builders Bounty #3 · $100_
+## How it works
+
+**To post a bounty**
+1. Open a GitHub issue with a clear description and acceptance criteria
+2. Comment `/opire create $XXX` in the issue to set the reward
+3. Share the link — contributors will find it
+
+**To claim a bounty**
+1. Browse the open issues below
+2. Comment `/opire try` in the issue you want to work on
+3. Submit a PR — payment is automatic on merge ✅
+
+---
+
+## Active Bounties
+
+| # | Task | Amount | Status |
+|---|------|--------|--------|
+| [#1](../../issues/1) | SKILL: Generate a CHANGELOG from git history | $50 | 🟢 Open |
+| [#2](../../issues/2) | TEMPLATE: CLAUDE.md for a Next.js + SQLite project | $75 | 🟢 Open |
+| [#3](../../issues/3) | HOOK: Block destructive bash commands in Claude Code | $100 | 🟢 Open |
+| [#4](../../issues/4) | AGENT: PR reviewer with structured Markdown output | $150 | 🟢 Open |
+| [#5](../../issues/5) | WORKFLOW: n8n + Claude API — automated weekly dev summary | $200 | 🟢 Open |
+
+---
+
+## Rules
+
+- Tasks must be related to Claude Code or AI tooling
+- Every issue must have clear acceptance criteria before a bounty is activated
+- Payment is handled by [Opire](https://opire.dev) (Stripe)
+- Quality over speed — a solid PR beats a fast one
+
+---
+
+## Community
+
+- 🐦 X: [@ClaudeBounty](https://x.com/ClaudeBounty)
+- 📧 Contact: claudebounty@gmail.com
+
+---
+
+*Started by the Claude builder community · March 2026 · MIT License*
